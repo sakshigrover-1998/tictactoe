@@ -1,0 +1,77 @@
+CREATE TABLE Player (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Game (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    is_over BOOLEAN NOT NULL,
+    winner VARCHAR(255),
+    current_player VARCHAR(255) NOT NULL,
+    human_symbol VARCHAR(255) NOT NULL,
+    computer_symbol VARCHAR(255) NOT NULL,
+    human_name VARCHAR(255) NOT NULL,
+    board VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Move (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    row INT NOT NULL,
+    column INT NOT NULL,
+    game_id BIGINT,
+    CONSTRAINT fk_game
+    FOREIGN KEY (game_id)
+    REFERENCES Game(id)
+);
+
+--cleaner version
+
+CREATE TABLE players (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE games (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    current_turn INT NOT NULL,
+    current_player ENUM('HUMAN', 'COMPUTER') NOT NULL,
+    human_symbol CHAR(1) NOT NULL,
+    computer_symbol CHAR(1) NOT NULL,
+    winner VARCHAR(255),
+    is_over BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE moves (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    game_id BIGINT NOT NULL,
+    player_id BIGINT NOT NULL,
+    row INT NOT NULL,
+    column INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (game_id) REFERENCES games(id),
+    FOREIGN KEY (player_id) REFERENCES players(id)
+);
+
+CREATE TABLE game_players (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    game_id BIGINT NOT NULL,
+    player_id BIGINT NOT NULL,
+    move_order INT NOT NULL,
+    FOREIGN KEY (game_id) REFERENCES games(id),
+    FOREIGN KEY (player_id) REFERENCES players(id)
+);
+
+CREATE TABLE move_game (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    game_id BIGINT NOT NULL,
+    move_id BIGINT NOT NULL,
+    FOREIGN KEY (game_id) REFERENCES games(id),
+    FOREIGN KEY (move_id) REFERENCES moves(id)
+);
+
